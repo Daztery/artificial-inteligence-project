@@ -1,5 +1,6 @@
 # import the pygame module, so you can use it
 import pygame
+import random
 from colorama import init,Back
 import csv
 from random import choice
@@ -24,6 +25,29 @@ class GridItem:
         self.y=y
         self.width=width
         self.height=height
+
+class spritesheethouse:
+    def __init__(self, filename, cols, rows,screen):
+        self.sheet = pygame.image.load(filename).convert_alpha()
+        self.screen = screen
+        self.cols = cols
+        self.rows = rows
+        self.totalCellCount = cols * rows
+
+        self.rect = self.sheet.get_rect()
+        w = self.cellWidth = int(self.rect.width / cols)
+        h = self.cellHeight = int(self.rect.height / rows)
+        hw, hh = self.cellCenter = (int(w / 2), int(h / 2))
+
+        self.cells = list([(index % cols * w, int(index / cols) * h, 32, 32) for index in range(self.totalCellCount)])
+        self.handle = list([
+            (0, 0), (-hw, 0), (-w, 0),
+            (0, -hh), (-hw, -hh), (-w, -hh),
+            (0, -h), (-hw, -h), (-w, -h),])
+
+    def draw(self,cellIndex, x, y):
+        self.screen.blit(self.sheet,(x,y), self.cells[cellIndex])
+                #self.screen.blit(self.ss_house.sheet,(rect.x,rect.y))
 
 class Player(GridItem):
     def __init__(self,x,y,width,height,vel,spritesheet = None,direction = Direction.RIGHT, frameIndex = 0):
@@ -90,6 +114,8 @@ def printPath(scenario):
             print(background + '  ', end = '')
         print('')
 
+
+
 class Game:
     def __init__(self):
         self.gameover = False
@@ -98,7 +124,7 @@ class Game:
         self.nuevos = None
         self.pos_actual = None
         self.path = None
-
+        #self.house_print =
 
     def calcular_distancias_nuevos(self):
         if len(self.nuevos) >= 1:
@@ -151,15 +177,31 @@ class Game:
         return matrix
 
     def printScenario(self,debug = False):
-
-
         for i in range(N_FRAMES):
             for j in range(N_FRAMES):
                 value,rect = self.scenario[i][j]
                 if value == GridItemType.ROAD:
                     pygame.draw.rect(self.screen,COLOR_ROAD,rect)
                 elif value == GridItemType.GROUND:
+
                     pygame.draw.rect(self.screen,COLOR_GREEN,rect)
+                    self.ss_house.draw(4,rect.x,rect.y)
+                    #self.screen.blit(self.ss_house.sheet,(rect.x,rect.y))
+                elif value == GridItemType.SEMAPH_GREEN:
+                    self.screen.blit(self.semaph_green,(rect.x,rect.y))
+                elif value == GridItemType.SEMAPH_RED:
+                    self.screen.blit(self.semaph_red,(rect.x,rect.y))
+                elif value == GridItemType.TARGET:
+                    pygame.draw.rect(self.screen,COLOR_SKYBLUE,rect)
+                if debug:
+                    pygame.draw.rect(self.screen,COLOR_RED,rect,1)
+    """
+    def printScenario(self,debug = False):
+        for i in range(N_FRAMES):
+            for j in range(N_FRAMES):
+                value,rect = self.scenario[i][j]
+                if value == GridItemType.ROAD:
+                    pygame.draw.rect(self.screen,COLOR_ROAD,rect)
                 elif value == GridItemType.SEMAPH_GREEN:
                     self.screen.blit(self.semaph_green,(rect.x,rect.y))
                 elif value == GridItemType.SEMAPH_RED:
@@ -169,6 +211,7 @@ class Game:
                 if debug:
                     pygame.draw.rect(self.screen,COLOR_RED,rect,1)
 
+    """
     def preload(self):
         #Init game
         pygame.init()
@@ -180,9 +223,11 @@ class Game:
         self.semaph_red = pygame.image.load(path.join('resources','semaphore-red.png'))
         self.semaph_green = pygame.image.load(path.join('resources','semaphore-green.png'))
         self.ss_player = SpriteSheet(path.join('resources','player.png'))
+        self.ss_house = spritesheethouse(path.join('resources','house2.png'), 5, 4,self.screen)
 
         #Create instances
         self.pos_actual = (0*FRAME_SIZE,0*FRAME_SIZE)
+
         self.player=Player(0*FRAME_SIZE,0*FRAME_SIZE,FRAME_SIZE,FRAME_SIZE,4,self.ss_player)
 
         self.nuevos = []
