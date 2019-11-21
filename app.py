@@ -124,7 +124,7 @@ class Game:
         self.nuevos = None
         self.pos_actual = None
         self.path = None
-        #self.house_print =
+        self.house_print  = [[random.randint(0, 19)] * 25 for i in range(25)]
 
     def calcular_distancias_nuevos(self):
         if len(self.nuevos) >= 1:
@@ -180,12 +180,13 @@ class Game:
         for i in range(N_FRAMES):
             for j in range(N_FRAMES):
                 value,rect = self.scenario[i][j]
+
                 if value == GridItemType.ROAD:
                     pygame.draw.rect(self.screen,COLOR_ROAD,rect)
                 elif value == GridItemType.GROUND:
 
                     pygame.draw.rect(self.screen,COLOR_GREEN,rect)
-                    self.ss_house.draw(4,rect.x,rect.y)
+                    self.ss_house.draw(self.house_print[i][j],rect.x,rect.y)
                     #self.screen.blit(self.ss_house.sheet,(rect.x,rect.y))
                 elif value == GridItemType.SEMAPH_GREEN:
                     self.screen.blit(self.semaph_green,(rect.x,rect.y))
