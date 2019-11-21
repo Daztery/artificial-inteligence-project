@@ -279,8 +279,26 @@ class Game:
                     #print([item.distance for item in self.nuevos])
                     #print(len(self.path))
                     self.movimiento()
+                if  event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_w:
+                        for i in range(N_FRAMES):
+                            for j in range(N_FRAMES):
+                                value,rect = self.scenario[i][j]
+                                if value == GridItemType.SEMAPH_GREEN:
+                                    self.scenario[i][j] = GridItemType.SEMAPH_RED,rect
+                                elif value == GridItemType.SEMAPH_RED:
+                                    self.scenario[i][j] = GridItemType.SEMAPH_GREEN,rect
 
-            #keys = pygame.key.get_pressed()
+                        if ini == True:
+                            self.path = []
+                            c = 1
+                            move = None
+                            self.player.x = int(self.player.x/32)*32
+                            self.player.y = int(self.player.y/32)*32;
+                            self.pos_actual = (self.player.x ,self.player.y)
+                            self.calcular_distancias_nuevos()
+                            self.movimiento()
+
             if ini == True:
                 print("Entoro ini")
                 if len(self.path) == 0:
