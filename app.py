@@ -233,8 +233,7 @@ class Game:
 
         self.nuevos = []
         self.path = []
-        pygame.display.set_icon(self.logo)
-        pygame.display.set_caption("Grin Route")
+        pygame.display.set_caption("Autonomous Car Route")
 
     def create(self):
         #First draw
