@@ -97,6 +97,7 @@ class Game:
         self.readScenario()
         self.nuevos = None
         self.pos_actual = None
+        self.path = None
 
 
     def calcular_distancias_nuevos(self):
@@ -150,7 +151,8 @@ class Game:
         return matrix
 
     def printScenario(self,debug = False):
-        print([item.distance for item in self.nuevos])
+
+
         for i in range(N_FRAMES):
             for j in range(N_FRAMES):
                 value,rect = self.scenario[i][j]
@@ -184,6 +186,7 @@ class Game:
         self.player=Player(0*FRAME_SIZE,0*FRAME_SIZE,FRAME_SIZE,FRAME_SIZE,4,self.ss_player)
 
         self.nuevos = []
+        self.path = []
         pygame.display.set_icon(self.logo)
         pygame.display.set_caption("Grin Route")
 
@@ -193,11 +196,14 @@ class Game:
         self.printScenario(DEBUG)
         pygame.display.update()
 
-    def calculatePath(self,x,y, path):
-        scenario = self.getValueMatrix()
-        start = (self.player.y // FRAME_SIZE,self.player.x // FRAME_SIZE)
-        p,evaluated = astar(scenario,start,(y,x),Node.Manhattan)
+    def calculatePath(self,x,y,p):
+
+        #print("Hola")
+
         npath = len(p)
+        #print(npath)
+        #print(self.path)
+
         for i in range(npath - 1):
             y1,x1 = p[i]
             y2,x2 = p[i+1]
@@ -205,23 +211,16 @@ class Game:
             dify = y2 - y1
             #agregar mov del jugador
             if difx > 0:
-                path.append(Direction.RIGHT)
+                self.path.append(Direction.RIGHT)
             elif difx < 0:
-                path.append(Direction.LEFT)
+                self.path.append(Direction.LEFT)
             elif dify > 0:
-                path.append(Direction.DOWN)
+                self.path.append(Direction.DOWN)
             elif dify < 0:
-                path.append(Direction.UP)
+                self.path.append(Direction.UP)
 
-        for step in evaluated:
-            i,j = step
-            scenario[i][j] = 11
-        for step in p:
-            i,j = step
-            scenario[i][j] = 10
-        printPath(scenario)
 
-    def movimiento(self, path):
+    def movimiento(self):
         currentTarget = None
 
         scenarioRects = self.getScenarioRects()
@@ -243,27 +242,29 @@ class Game:
                 self.scenario[a][b] = (1,d)
             currentTarget = (x,y)
 
-        self.calculatePath(self.pos_actual[0],self.pos_actual[1],path)
 
-
+        scenario = self.getValueMatrix()
+        start = (self.player.y // FRAME_SIZE,self.player.x // FRAME_SIZE)
+        p,evaluated = astar(scenario,start,(self.pos_actual[1],self.pos_actual[0]),Node.Manhattan)
+        self.calculatePath(self.pos_actual[0],self.pos_actual[1],p)
 
 
     def update(self):
-        path = []
         c = 1
         move = None
-        ini = False
-        while not self.gameover:
 
+        while not self.gameover:
+            ini = False
+            pygame.time.delay(DELAY)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameover = True
                 # click event and get the position
                 if event.type ==pygame.MOUSEBUTTONDOWN:
-                    """
-                    if len(self.nuevos) >= 1:
+
+                    if len(self.nuevos) > 1:
                         path = []
-                    """
+
                     ini = True
                     mx,my=pygame.mouse.get_pos()
                     mx=int(mx/32)*32
@@ -272,24 +273,33 @@ class Game:
                     pasjeroNuevo = Pasajero(final,0)
                     self.nuevos.append(pasjeroNuevo)
                     self.calcular_distancias_nuevos()
-                    self.calculatePath(self.pos_actual[0],self.pos_actual[1],path)
-                if ini:
-                    self.movimiento(path)
-                    if len(path) == 0:
-                        self.nuevos.pop(0)
-                else:
-                    ini = False
+                    print([item.distance for item in self.nuevos])
+                    print("Paht")
+                    print(len(self.path))
+
+
+
+
             #keys = pygame.key.get_pressed()
+            if ini == True:
+                self.movimiento()
+                if len(self.path) == 0:
+                    ini = False
+                    move = None
+                    self.path=[]
+                    self.nuevos.pop(0)
+                    print("Terminoooooooo")
 
 
             self.screen.fill(SCREEN_BACKGROUND_COLOR)
             self.printScenario(DEBUG)
             self.player.blit_on(self.screen,DEBUG)
             if c == 9:
-                if len(path) > 0:
-                    move = path.pop(0)
+                if len(self.path) > 0:
+                    move = self.path.pop(0)
                 else:
                     move = None
+
                 c = 1
             if move is not None:
                 self.player.direction = move
