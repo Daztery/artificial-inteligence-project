@@ -3,7 +3,7 @@
 
   
 
-Trabajo 1 para el curso de Inteligencia Artificial
+Trabajo Final para el curso de Inteligencia Artificial
 
   
 
@@ -37,7 +37,7 @@ Trabajo 1 para el curso de Inteligencia Artificial
 
 Clonar el repositorio con el código fuente:
 ```
-> git clone https://github.com/manuxo/IA-TB1.git
+> git clone https://github.com/Daztery/ia-tf.git
 ```
   
 
@@ -62,10 +62,7 @@ Para ver desde una perspectiva de depuración ir a la carpeta tb1util, Constants
 
 ## Integrantes
 
-  
 
-  
-
-- Manuel Augusto Alvarado Estanga (u201615101)
 
 - César Andrés López Hurtado (u201611112)
+- Juan Diego Alosilla Lajo (u201611283)
