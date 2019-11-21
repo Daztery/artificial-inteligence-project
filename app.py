@@ -198,7 +198,7 @@ class Game:
 
     def calculatePath(self,x,y,p):
 
-        #print("Hola")
+        print("Entro calculate Path")
 
         npath = len(p)
         #print(npath)
@@ -221,8 +221,8 @@ class Game:
 
 
     def movimiento(self):
+        print("Entro movimiento")
         currentTarget = None
-
         scenarioRects = self.getScenarioRects()
         mouseRect = pygame.Rect(int(self.nuevos[0].end[0]/32)*32,int(self.nuevos[0].end[1]/32)*32,FRAME_SIZE,FRAME_SIZE)
         collideIndex = mouseRect.collidelist(scenarioRects)
@@ -252,9 +252,8 @@ class Game:
     def update(self):
         c = 1
         move = None
-
+        ini = False
         while not self.gameover:
-            ini = False
             pygame.time.delay(DELAY)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -262,34 +261,41 @@ class Game:
                 # click event and get the position
                 if event.type ==pygame.MOUSEBUTTONDOWN:
 
-                    if len(self.nuevos) > 1:
-                        path = []
-
+                    print("Entro click")
+                    self.path = []
+                    c = 1
+                    move = None
                     ini = True
                     mx,my=pygame.mouse.get_pos()
                     mx=int(mx/32)*32
                     my=int(my/32)*32
                     final = (mx,my)
+                    self.player.x = int(self.player.x/32)*32
+                    self.player.y = int(self.player.y/32)*32;
+                    self.pos_actual = (self.player.x ,self.player.y)
                     pasjeroNuevo = Pasajero(final,0)
                     self.nuevos.append(pasjeroNuevo)
                     self.calcular_distancias_nuevos()
-                    print([item.distance for item in self.nuevos])
-                    print("Paht")
-                    print(len(self.path))
-
-
-
+                    #print([item.distance for item in self.nuevos])
+                    #print(len(self.path))
+                    self.movimiento()
 
             #keys = pygame.key.get_pressed()
             if ini == True:
-                self.movimiento()
+                print("Entoro ini")
                 if len(self.path) == 0:
                     ini = False
-                    move = None
                     self.path=[]
                     self.nuevos.pop(0)
-                    print("Terminoooooooo")
-
+                    print("Pop")
+                    if len(self.nuevos) >= 1:
+                        print("Entro click")
+                        self.path = []
+                        c = 1
+                        move = None
+                        ini = True
+                        self.calcular_distancias_nuevos()
+                        self.movimiento()
 
             self.screen.fill(SCREEN_BACKGROUND_COLOR)
             self.printScenario(DEBUG)
