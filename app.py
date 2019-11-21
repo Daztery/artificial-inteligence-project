@@ -59,13 +59,13 @@ class Player(GridItem):
 
         if self.spritesheet is not None:
             frames = []
-            for i in range(15):
+            for i in range(17):
                 frames.append((i*FRAME_SIZE,0,FRAME_SIZE,FRAME_SIZE))
 
             self.images = [None] * 4
             for dir in [Direction.LEFT,Direction.RIGHT,Direction.DOWN,Direction.UP]:
-                a = dir * 3
-                b = a + 3
+                a = dir * 4
+                b = a + 4
                 self.images[dir] = self.spritesheet.images_at(frames[a:b],PLAYER_COLORKEY)
 
     def move(self):
@@ -78,7 +78,7 @@ class Player(GridItem):
         elif self.direction == Direction.RIGHT:
             self.x += self.vel
 
-        if self.frameIndex < 2:
+        if self.frameIndex < 3:
             self.frameIndex += 1
         else:
             self.frameIndex = 0
